@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SIPAT - Sorteador</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      color: #fff;
+      text-align: center;
+      background: #d35400 url('tijolos-luz.png') repeat; /* imagem de tijolinhos com pontos de luz */
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Faixas de interdição laterais */
+    body::before, body::after {
+      content: "";
+      position: fixed;
+      top: 0;
+      width: 40px;
+      height: 100%;
+      background: repeating-linear-gradient(
+        45deg,
+        #000,
+        #000 20px,
+        #fdd835 20px,
+        #fdd835 40px
+      );
+      z-index: 5;
+    }
+    body::before { left: 0; }
+    body::after { right: 0; }
+
+    header {
+      background: rgba(217, 76, 11, 0.95);
+      margin: 20px;
+      padding: 20px;
+      border-radius: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Logo CIPA lado esquerdo */
+    .logo-cipa {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+    }
+
+    /* Título centralizado */
+    .titulo {
+      flex: 1;
+      text-align: center;
+    }
+    .titulo h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      font-weight: bold;
+    }
+    .titulo h2 {
+      margin: 5px 0 0;
+      font-size: 1.2rem;
+      font-weight: normal;
+    }
+
+    /* Capacete lado direito */
+    .img-topo {
+      width: 150px;
+      height: auto;
+    }
+
+    main {
+      padding: 30px 20px;
+      margin: 0 60px; /* não encostar nas bordas */
+    }
+
+    .input-group {
+      margin: 20px 0;
+    }
+
+    input {
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+      width: 200px;
+      text-align: center;
+    }
+
+    button {
+      margin: 10px;
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #fff;
+      background: #f57c00;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #d94c0b;
+    }
+
+    .resultado {
+      font-size: 2rem;
+      margin: 20px 0;
+      font-weight: bold;
+      color: #ffd600;
+    }
+
+    .sorteados {
+      margin: 20px auto;
+      padding: 15px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 10px;
+      max-width: 600px;
+    }
+
+    /* Carrossel 4 imagens lado a lado */
+    .carousel-container {
+      margin: 30px auto;
+      width: 90%;
+      max-width: 1200px;
+      overflow: hidden;
+      border-radius: 12px;
+      background: #fff;
+      padding: 10px;
+    }
+
+    .carousel-track {
+      display: flex;
+      transition: transform 0.5s ease-in-out;
+    }
+
+    .carousel-track img {
+      width: 400px;
+      height: 400px;
+      object-fit: cover;
+      margin: 0 5px;
+      border-radius: 8px;
+    }
+
+    footer {
+      background: #222;
+      color: #ccc;
+      padding: 15px;
+      font-size: 0.9rem;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <!-- Logo CIPA lado esquerdo -->
+    <img src="cipa.png" alt="Logo CIPA" class="logo-cipa">
+
+    <!-- Títulos -->
+    <div class="titulo">
+      <h1>SIPAT - Sorteador</h1>
+      <h2>Semana Interna de Prevenção de Acidentes de Trabalho</h2>
+    </div>
+
+    <!-- Capacete, luva e protetor lado direito -->
+    <img src="capacete.png" alt="Capacete Segurança" class="img-topo">
+  </header>
+
+  <main>
+    <div class="input-group">
+      <label for="maxParticipantes">Número máximo de participantes:</label><br>
+      <input type="number" id="maxParticipantes" min="1">
+    </div>
+
+    <button onclick="sortear()">Sortear</button>
+    <button onclick="confirmarReset()">Resetar Sorteio</button>
+
+    <div class="resultado" id="resultado">---</div>
+
+    <div class="sorteados">
+      <h3>Números sorteados:</h3>
+      <p id="listaSorteados">Nenhum número sorteado ainda.</p>
+    </div>
+
+    <!-- Carrossel de patrocinadores -->
+    <div class="carousel-container">
+      <div class="carousel-track" id="carouselTrack">
+        <img src="patrocinador1.png" alt="Patrocinador 1">
+        <img src="patrocinador2.png" alt="Patrocinador 2">
+        <img src="patrocinador3.png" alt="Patrocinador 3">
+        <img src="patrocinador4.png" alt="Patrocinador 4">
+        <img src="patrocinador5.png" alt="Patrocinador 5">
+        <img src="patrocinador6.png" alt="Patrocinador 6">
+        <img src="patrocinador7.png" alt="Patrocinador 7">
+        <img src="patrocinador8.png" alt="Patrocinador 8">
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    Sorteador Web desenvolvido pela Semana Interna de Prevenção de Acidentes de Trabalho de São João da Boa Vista - 2025
+  </footer>
+
+  <script>
+    let sorteados = [];
+    let max = 0;
+
+    function sortear() {
+      max = parseInt(document.getElementById('maxParticipantes').value);
+      if (!max || max < 1) {
+        alert("Digite um número válido de participantes.");
+        return;
+      }
+
+      if (sorteados.length >= max) {
+        alert("Todos os números já foram sorteados!");
+        return;
+      }
+
+      let numero;
+      do {
+        numero = Math.floor(Math.random() * max) + 1;
+      } while (sorteados.includes(numero));
+
+      sorteados.push(numero);
+      document.getElementById('resultado').textContent = numero;
+      document.getElementById('listaSorteados').textContent = sorteados.join(", ");
+    }
+
+    function confirmarReset() {
+      let confirmacao = prompt("Digite SIM para confirmar o reset do sorteio:");
+      if (confirmacao && confirmacao.toUpperCase() === "SIM") {
+        resetar();
+      } else {
+        alert("Reset cancelado.");
+      }
+    }
+
+    function resetar() {
+      sorteados = [];
+      max = 0;
+      document.getElementById('maxParticipantes').value = "";
+      document.getElementById('resultado').textContent = "---";
+      document.getElementById('listaSorteados').textContent = "Nenhum número sorteado ainda.";
+    }
+
+    // Carrossel 4 imagens por vez
+    const track = document.getElementById("carouselTrack");
+    const slides = document.querySelectorAll(".carousel-track img");
+    const totalSlides = slides.length;
+    const visibleSlides = 4;
+    let index = 0;
+
+    function moveCarousel() {
+      index = (index + visibleSlides) % totalSlides;
+      track.style.transform = `translateX(-${index * 410}px)`;
+    }
+
+    setInterval(moveCarousel, 10000); // troca a cada 10s
+  </script>
+</body>
+</html>
