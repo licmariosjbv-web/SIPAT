@@ -48,26 +48,26 @@
     }
 
     .logo-esquerda {
-  grid-column: 1;
-  display: flex;
-  justify-content: flex-start;
-}
-.logo-direita {
-  grid-column: 3;
-  display: flex;
-  justify-content: flex-end;
-}
+      grid-column: 1;
+      display: flex;
+      justify-content: flex-start;
+    }
+    .logo-direita {
+      grid-column: 3;
+      display: flex;
+      justify-content: flex-end;
+    }
 
-.logo-esquerda img {
-  width: 350px;
-  height: 200px;
-  object-fit: contain;
-}
-.logo-direita img {
-  width: 150px;
-  height: 150px;
-  object-fit: contain;
-}
+    .logo-esquerda img {
+      width: 350px;
+      height: 200px;
+      object-fit: contain;
+    }
+    .logo-direita img {
+      width: 150px;
+      height: 150px;
+      object-fit: contain;
+    }
 
     /* ===================== CORPO ===================== */
     main {
@@ -151,17 +151,21 @@
 
     /* ===================== CARROSSEL ===================== */
     .carousel {
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+      margin: 40px 0;
+    }
+
+    .carousel-track {
       display: flex;
-      justify-content: center;
-      gap: 20px;
-      margin-top: 30px;
-      margin-bottom: 50px;
-      flex-wrap: wrap;
+      transition: transform 1s ease-in-out;
     }
 
     .carousel img {
-      width: 400px;
-      height: 400px;
+      width: 300px;
+      height: 200px;
+      margin: 0 15px;
       object-fit: contain;
       border-radius: 10px;
       box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
@@ -212,26 +216,28 @@
   </main>
 
   <!-- Carrossel -->
-  <div class="carousel" id="carousel">
-    <img src="pat1.png" alt="Patrocinador 1">
-    <img src="pat2.png" alt="Patrocinador 2">
-    <img src="pat3.png" alt="Patrocinador 3">
-    <img src="pat4.jpg" alt="Patrocinador 4">
-    <img src="pat5.jpg" alt="Patrocinador 5">
-    <img src="pat6.png" alt="Patrocinador 6">
-    <img src="pat7.png" alt="Patrocinador 7">
-    <img src="pat8.png" alt="Patrocinador 8">
-    <img src="pat9.png" alt="Patrocinador 9">
-    <img src="pat10.png" alt="Patrocinador 10">
-    <img src="pat11.png" alt="Patrocinador 11">
-    <img src="pat12.png" alt="Patrocinador 12">
-    <img src="pat13.png" alt="Patrocinador 13">
-    <img src="pat14.png" alt="Patrocinador 14">
-    <img src="pat15.png" alt="Patrocinador 15">
-    <img src="pat16.png" alt="Patrocinador 16">
-    <img src="pat17.png" alt="Patrocinador 17">
-    <img src="pat18.png" alt="Patrocinador 18">
-    <img src="pat19.png" alt="Patrocinador 19">
+  <div class="carousel">
+    <div class="carousel-track" id="carouselTrack">
+      <img src="pat1.png" alt="Patrocinador 1">
+      <img src="pat2.png" alt="Patrocinador 2">
+      <img src="pat3.png" alt="Patrocinador 3">
+      <img src="pat4.jpg" alt="Patrocinador 4">
+      <img src="pat5.jpg" alt="Patrocinador 5">
+      <img src="pat6.png" alt="Patrocinador 6">
+      <img src="pat7.png" alt="Patrocinador 7">
+      <img src="pat8.png" alt="Patrocinador 8">
+      <img src="pat9.png" alt="Patrocinador 9">
+      <img src="pat10.png" alt="Patrocinador 10">
+      <img src="pat11.png" alt="Patrocinador 11">
+      <img src="pat12.png" alt="Patrocinador 12">
+      <img src="pat13.png" alt="Patrocinador 13">
+      <img src="pat14.png" alt="Patrocinador 14">
+      <img src="pat15.png" alt="Patrocinador 15">
+      <img src="pat16.png" alt="Patrocinador 16">
+      <img src="pat17.png" alt="Patrocinador 17">
+      <img src="pat18.png" alt="Patrocinador 18">
+      <img src="pat19.png" alt="Patrocinador 19">
+    </div>
   </div>
 
   <!-- Rodapé -->
@@ -293,23 +299,21 @@
       document.getElementById("maxParticipantes").value = "";
     }
 
-    // Carrossel
-    const imagens = ["pat1.png","pat2.png","pat3.png","pat4.png","pat5.png","pat6.png","pat7.png","pat8.png"];
-    let indice = 0;
+    // ===================== CARROSSEL =====================
+    const track = document.getElementById("carouselTrack");
+    const slides = document.querySelectorAll(".carousel img");
+    let index = 0;
+    const slideWidth = slides[0].clientWidth + 30; // largura + margem
 
-    function atualizarCarrossel() {
-      const carousel = document.getElementById("carousel");
-      carousel.innerHTML = "";
-      for (let i = 0; i < 4; i++) {
-        const img = document.createElement("img");
-        img.src = imagens[(indice + i) % imagens.length];
-        carousel.appendChild(img);
+    function moverCarrossel() {
+      index++;
+      if (index >= slides.length) {
+        index = 0;
       }
-      indice = (indice + 4) % imagens.length;
+      track.style.transform = `translateX(${-index * slideWidth}px)`;
     }
 
-    setInterval(atualizarCarrossel, 10000);
-    atualizarCarrossel();
+    setInterval(moverCarrossel, 10000); // troca a cada 10 segundos
   </script>
 </body>
 </html>
